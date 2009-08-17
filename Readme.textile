@@ -1,0 +1,15 @@
+h1. Excelsior
+
+Ruby gem that uses C bindings to read CSV files superfast (my benchmarks put this at 7.4 times faster than fastercsv). I'm totally serial!
+
+h2. Usage
+
+For right now all it can do is parse a text stream...
+
+<pre>
+require 'rubygems'
+require 'excelsior'
+an_array = Excelsior::Reader.parse(File.read("a_csv_file.csv"))
+</pre>
+
+... more to come soon ...
