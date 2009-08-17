@@ -23,7 +23,7 @@ VALUE e_parse(VALUE self, VALUE data) {
    letter = any - delimeter - space - '"' - "'";
    string = '"' schar1* '"' | "'" schar2* "'";
    word = letter+;
-   value = word (" " word)*;
+   value = word (" "+ word)*;
    main := |*
      newline { rb_ary_push(rows, arr); arr = rb_ary_new(); };
      space;

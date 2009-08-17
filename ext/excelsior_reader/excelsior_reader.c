@@ -51,20 +51,20 @@ static const char _excelsior_scan_index_offsets[] = {
 };
 
 static const char _excelsior_scan_indicies[] = {
-	0, 0, 0, 0, 0, 1, 3, 2, 
-	3, 4, 6, 7, 5, 2, 4, 8, 
-	5, 1, 10, 9, 9, 9, 9, 1, 
-	6, 11, 0
+	2, 0, 0, 0, 0, 1, 4, 3, 
+	4, 5, 7, 8, 6, 3, 5, 9, 
+	6, 1, 2, 10, 10, 10, 10, 1, 
+	7, 11, 0
 };
 
 static const char _excelsior_scan_trans_targs[] = {
-	3, 4, 1, 3, 2, 3, 3, 5, 
-	3, 3, 0, 3
+	3, 4, 0, 1, 3, 2, 3, 3, 
+	5, 3, 3, 3
 };
 
 static const char _excelsior_scan_trans_actions[] = {
-	19, 5, 0, 11, 0, 9, 7, 0, 
-	13, 17, 0, 15
+	19, 5, 0, 0, 11, 0, 9, 7, 
+	0, 13, 17, 15
 };
 
 static const char _excelsior_scan_to_state_actions[] = {
@@ -76,7 +76,7 @@ static const char _excelsior_scan_from_state_actions[] = {
 };
 
 static const char _excelsior_scan_eof_trans[] = {
-	1, 0, 0, 0, 10, 12
+	1, 0, 0, 0, 11, 12
 };
 
 static const int excelsior_scan_start = 3;

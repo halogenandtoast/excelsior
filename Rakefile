@@ -8,7 +8,7 @@ PKG_FILES = %w(Rakefile) +
  
 gem_spec = Gem::Specification.new do |gem_spec|
   gem_spec.name = 'excelsior'
-  gem_spec.version = '0.0.1'
+  gem_spec.version = '0.0.2'
   gem_spec.summary = 'A Ruby gem that uses C bindings to read CSV files superfast. I\'m totally serial!'
   gem_spec.description = 'A Ruby gem that uses C bindings to read CSV files superfast. I\'m totally serial!'
   gem_spec.email = 'matt@toastyapps.com'
