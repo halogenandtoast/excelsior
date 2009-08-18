@@ -13,7 +13,6 @@ VALUE e_parse(VALUE self, VALUE data) {
  pe = p + len;
  eof = pe;
  int has_found = 0;
-
  %%{
    machine excelsior_scan;
    delimeter = ",";
@@ -23,7 +22,7 @@ VALUE e_parse(VALUE self, VALUE data) {
    string = '"' (schar | '""')* '"' ;
    value = letter+;
    main := |*
-     newline { rb_ary_push(rows, arr); arr = rb_ary_new(); };
+     newline { rb_ary_push(rows, arr); arr = rb_ary_new(); has_found = 0; };
      space;
      value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
      string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
