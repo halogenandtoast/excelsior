@@ -17,77 +17,72 @@ VALUE e_parse(VALUE self, VALUE data) {
  int has_found = 0;
 
  
-#line 34 "excelsior_reader.rl"
+#line 32 "excelsior_reader.rl"
 
 
  
 #line 25 "excelsior_reader.c"
 static const char _excelsior_scan_actions[] = {
-	0, 1, 0, 1, 1, 1, 2, 1, 
-	3, 1, 4, 1, 5, 1, 6, 1, 
-	7, 1, 8, 1, 9
+	0, 1, 2, 1, 7, 1, 8, 1, 
+	9, 1, 10, 1, 11, 2, 0, 1, 
+	2, 3, 4, 2, 3, 5, 2, 3, 
+	6
 };
 
 static const char _excelsior_scan_key_offsets[] = {
-	0, 6, 7, 8, 16, 22
+	0, 0, 1, 8, 12, 13
 };
 
 static const char _excelsior_scan_trans_keys[] = {
-	32, 34, 39, 44, 9, 13, 34, 39, 
-	10, 13, 32, 34, 39, 44, 9, 12, 
-	32, 34, 39, 44, 9, 13, 10, 0
+	34, 10, 13, 32, 34, 44, 9, 12, 
+	10, 13, 34, 44, 10, 34, 0
 };
 
 static const char _excelsior_scan_single_lengths[] = {
-	4, 1, 1, 6, 4, 1
+	0, 1, 5, 4, 1, 1
 };
 
 static const char _excelsior_scan_range_lengths[] = {
-	1, 0, 0, 1, 1, 0
+	0, 0, 1, 0, 0, 0
 };
 
 static const char _excelsior_scan_index_offsets[] = {
-	0, 6, 8, 10, 18, 24
-};
-
-static const char _excelsior_scan_indicies[] = {
-	2, 0, 0, 0, 0, 1, 4, 3, 
-	4, 5, 7, 8, 6, 3, 5, 9, 
-	6, 1, 2, 10, 10, 10, 10, 1, 
-	7, 11, 0
+	0, 0, 2, 9, 14, 16
 };
 
 static const char _excelsior_scan_trans_targs[] = {
-	3, 4, 0, 1, 3, 2, 3, 3, 
-	5, 3, 3, 3
+	5, 1, 2, 4, 3, 1, 2, 3, 
+	3, 2, 2, 2, 2, 3, 2, 2, 
+	1, 2, 2, 2, 2, 2, 0
 };
 
 static const char _excelsior_scan_trans_actions[] = {
-	19, 5, 0, 0, 11, 0, 9, 7, 
-	0, 13, 17, 15
+	22, 0, 3, 0, 16, 0, 5, 16, 
+	19, 11, 11, 11, 11, 19, 3, 7, 
+	0, 9, 11, 11, 7, 9, 0
 };
 
 static const char _excelsior_scan_to_state_actions[] = {
-	0, 0, 0, 1, 0, 0
+	0, 0, 13, 0, 0, 0
 };
 
 static const char _excelsior_scan_from_state_actions[] = {
-	0, 0, 0, 3, 0, 0
+	0, 0, 1, 0, 0, 0
 };
 
 static const char _excelsior_scan_eof_trans[] = {
-	1, 0, 0, 0, 11, 12
+	0, 20, 0, 20, 21, 22
 };
 
-static const int excelsior_scan_start = 3;
-static const int excelsior_scan_error = -1;
+static const int excelsior_scan_start = 2;
+static const int excelsior_scan_error = 0;
 
-static const int excelsior_scan_en_main = 3;
+static const int excelsior_scan_en_main = 2;
 
 
-#line 37 "excelsior_reader.rl"
+#line 35 "excelsior_reader.rl"
  
-#line 91 "excelsior_reader.c"
+#line 86 "excelsior_reader.c"
 	{
 	cs = excelsior_scan_start;
 	ts = 0;
@@ -95,9 +90,9 @@ static const int excelsior_scan_en_main = 3;
 	act = 0;
 	}
 
-#line 38 "excelsior_reader.rl"
+#line 36 "excelsior_reader.rl"
  
-#line 101 "excelsior_reader.c"
+#line 96 "excelsior_reader.c"
 	{
 	int _klen;
 	unsigned int _trans;
@@ -107,16 +102,18 @@ static const int excelsior_scan_en_main = 3;
 
 	if ( p == pe )
 		goto _test_eof;
+	if ( cs == 0 )
+		goto _out;
 _resume:
 	_acts = _excelsior_scan_actions + _excelsior_scan_from_state_actions[cs];
 	_nacts = (unsigned int) *_acts++;
 	while ( _nacts-- > 0 ) {
 		switch ( *_acts++ ) {
-	case 1:
+	case 2:
 #line 1 "excelsior_reader.rl"
 	{ts = p;}
 	break;
-#line 120 "excelsior_reader.c"
+#line 117 "excelsior_reader.c"
 		}
 	}
 
@@ -169,7 +166,6 @@ _resume:
 	}
 
 _match:
-	_trans = _excelsior_scan_indicies[_trans];
 _eof_trans:
 	cs = _excelsior_scan_trans_targs[_trans];
 
@@ -182,39 +178,57 @@ _eof_trans:
 	{
 		switch ( *_acts++ )
 		{
-	case 2:
+	case 3:
 #line 1 "excelsior_reader.rl"
 	{te = p+1;}
 	break;
-	case 3:
-#line 28 "excelsior_reader.rl"
-	{te = p+1;{ rb_ary_push(rows, arr); arr = rb_ary_new(); }}
-	break;
 	case 4:
-#line 29 "excelsior_reader.rl"
-	{te = p+1;}
+#line 27 "excelsior_reader.rl"
+	{act = 2;}
 	break;
 	case 5:
-#line 31 "excelsior_reader.rl"
-	{te = p+1;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
+#line 28 "excelsior_reader.rl"
+	{act = 3;}
 	break;
 	case 6:
-#line 32 "excelsior_reader.rl"
-	{te = p+1;{ if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;}}
+#line 29 "excelsior_reader.rl"
+	{act = 4;}
 	break;
 	case 7:
-#line 28 "excelsior_reader.rl"
-	{te = p;p--;{ rb_ary_push(rows, arr); arr = rb_ary_new(); }}
+#line 26 "excelsior_reader.rl"
+	{te = p+1;{ rb_ary_push(rows, arr); arr = rb_ary_new(); }}
 	break;
 	case 8:
 #line 30 "excelsior_reader.rl"
-	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;}}
+	{te = p+1;{ if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;}}
 	break;
 	case 9:
-#line 30 "excelsior_reader.rl"
-	{{p = ((te))-1;}{ rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;}}
+#line 26 "excelsior_reader.rl"
+	{te = p;p--;{ rb_ary_push(rows, arr); arr = rb_ary_new(); }}
 	break;
-#line 218 "excelsior_reader.c"
+	case 10:
+#line 29 "excelsior_reader.rl"
+	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
+	break;
+	case 11:
+#line 1 "excelsior_reader.rl"
+	{	switch( act ) {
+	case 0:
+	{{cs = 0; goto _again;}}
+	break;
+	case 3:
+	{{p = ((te))-1;} rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;}
+	break;
+	case 4:
+	{{p = ((te))-1;} rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}
+	break;
+	default:
+	{{p = ((te))-1;}}
+	break;
+	}
+	}
+	break;
+#line 232 "excelsior_reader.c"
 		}
 	}
 
@@ -227,10 +241,16 @@ _again:
 #line 1 "excelsior_reader.rl"
 	{ts = 0;}
 	break;
-#line 231 "excelsior_reader.c"
+	case 1:
+#line 1 "excelsior_reader.rl"
+	{act = 0;}
+	break;
+#line 249 "excelsior_reader.c"
 		}
 	}
 
+	if ( cs == 0 )
+		goto _out;
 	if ( ++p != pe )
 		goto _resume;
 	_test_eof: {}
@@ -242,9 +262,10 @@ _again:
 	}
 	}
 
+	_out: {}
 	}
 
-#line 39 "excelsior_reader.rl"
+#line 37 "excelsior_reader.rl"
  if(RARRAY_LEN(arr) > 0) {
    rb_ary_push(rows, arr);
  }

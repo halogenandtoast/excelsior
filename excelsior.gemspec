@@ -52,7 +52,7 @@ required_rubygems_version: !ruby/object:Gem::Requirement
 requirements: []
 
 rubyforge_project: 
-rubygems_version: 1.3.4
+rubygems_version: 1.3.5
 signing_key: 
 specification_version: 3
 summary: A Ruby gem that uses C bindings to read CSV files superfast. I'm totally serial!

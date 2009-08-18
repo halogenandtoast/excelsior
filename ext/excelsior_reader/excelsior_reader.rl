@@ -18,12 +18,10 @@ VALUE e_parse(VALUE self, VALUE data) {
    machine excelsior_scan;
    delimeter = ",";
    newline = "\r"? "\n" | "\r" | "\n";
-   schar1 = any - '"';
-   schar2 = any - "'";
-   letter = any - delimeter - space - '"' - "'";
-   string = '"' schar1* '"' | "'" schar2* "'";
-   word = letter+;
-   value = word (" "+ word)*;
+   schar = any - '"';
+   letter = any - delimeter  - '"' - newline;
+   string = '"' (schar | '""')* '"' ;
+   value = letter+;
    main := |*
      newline { rb_ary_push(rows, arr); arr = rb_ary_new(); };
      space;
