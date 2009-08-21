@@ -9,7 +9,10 @@ For right now all it can do is parse a text stream...
 <pre>
 require 'rubygems'
 require 'excelsior'
-an_array = Excelsior::Reader.parse(File.read("a_csv_file.csv"))
+rows = []
+Excelsior::Reader.rows(File.new("a_csv_file.csv")) do |row|
+ rows << row
+end
 </pre>
 
 ... more to come soon ...

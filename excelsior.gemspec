@@ -1,7 +1,7 @@
 --- !ruby/object:Gem::Specification 
 name: excelsior
 version: !ruby/object:Gem::Version 
-  version: 0.0.4
+  version: 0.0.5
 platform: ruby
 authors: 
 - Matthew Mongeau
@@ -9,7 +9,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2009-08-18 00:00:00 -04:00
+date: 2009-08-21 00:00:00 -04:00
 default_executable: 
 dependencies: []
 
