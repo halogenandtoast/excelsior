@@ -40,7 +40,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   rb_scan_args(argc, argv, "1", &io);
   
   is_io = rb_respond_to(io, s_read);
-  buf = ALLOC_N(char, buffer_size);
+  buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
   
   %% write init;
   
