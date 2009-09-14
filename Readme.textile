@@ -4,7 +4,7 @@ Ruby gem that uses C bindings to read CSV files superfast (my benchmarks put thi
 
 h2. Usage
 
-For right now all it can do is parse a text stream...
+h3. Parsing an IO Object
 
 <pre>
 require 'rubygems'
@@ -15,4 +15,13 @@ Excelsior::Reader.rows(File.new("a_csv_file.csv")) do |row|
 end
 </pre>
 
-... more to come soon ...
+h3. Parsing a text stream
+
+<pre>
+require 'rubygems'
+require 'excelsior'
+rows = []
+Excelsior::Reader.rows("first,second,third\n1,2,3") do |row|
+ rows << row
+end
+</pre>
