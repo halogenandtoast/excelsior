@@ -7,18 +7,18 @@ int has_found = 0;
 
 %%{
    machine excelsior_scan;
-   delimeter = ",";
-   newline = "\r"? "\n" | "\r" | "\n";
-   schar = any - '"';
-   letter = any - delimeter  - '"' - newline;
-   string = '"' (schar | '""')* '"' ;
+   delimiter = ",";
+   newline = "\r"? "\n" | "\r";
+   string_character = any - '"';
+   letter = string_character - delimiter - newline;
+   string = '"' (string_character | '""')* '"' ;
    value = letter+;
    main := |*
-     newline { rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
+		 newline { if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
      space;
      value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
      string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
-     delimeter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
+     delimiter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
    *|;
 }%%
  

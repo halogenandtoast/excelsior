@@ -238,7 +238,7 @@ _eof_trans:
 	break;
 	case 7:
 #line 17 "excelsior_reader.rl"
-	{te = p+1;{ rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
+	{te = p+1;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 8:
 #line 21 "excelsior_reader.rl"
@@ -246,7 +246,7 @@ _eof_trans:
 	break;
 	case 9:
 #line 17 "excelsior_reader.rl"
-	{te = p;p--;{ rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
+	{te = p;p--;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 10:
 #line 20 "excelsior_reader.rl"

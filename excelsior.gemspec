@@ -1,7 +1,7 @@
 --- !ruby/object:Gem::Specification 
 name: excelsior
 version: !ruby/object:Gem::Version 
-  version: 0.0.6
+  version: 0.0.7
 platform: ruby
 authors: 
 - Matthew Mongeau
@@ -9,7 +9,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2009-08-24 00:00:00 -04:00
+date: 2009-12-09 00:00:00 -05:00
 default_executable: 
 dependencies: []
 
@@ -52,7 +52,7 @@ required_rubygems_version: !ruby/object:Gem::Requirement
 requirements: []
 
 rubyforge_project: 
-rubygems_version: 1.3.4
+rubygems_version: 1.3.5
 signing_key: 
 specification_version: 3
 summary: A Ruby gem that uses C bindings to read CSV files superfast. I'm totally serial!
