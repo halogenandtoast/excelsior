@@ -10,7 +10,7 @@ h3. Parsing an IO Object
 require 'rubygems'
 require 'excelsior'
 rows = []
-Excelsior::Reader.rows(File.new("a_csv_file.csv")) do |row|
+Excelsior::Reader.rows(File.open('a_csv_file.csv', 'rb')) do |row|
  rows << row
 end
 </pre>
