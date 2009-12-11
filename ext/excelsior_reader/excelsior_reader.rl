@@ -58,12 +58,11 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     } else { 
       // Going to assume it's a string and already in memory
       //str = io;
-      len = buffer_size = RSTRING_LEN(io);
-      memcpy(p, StringValuePtr(io), len);
-      space = buffer_size - have;
-      pe = p + buffer_size;
-      eof = pe;
-      done = 1;
+	  p = RSTRING_PTR(io);
+      len = RSTRING_LEN(io) + 1;
+      pe = p + len;
+	  eof = pe;
+	  done = 1;
     }
   
     if(len < space) {

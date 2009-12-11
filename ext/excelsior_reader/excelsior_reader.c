@@ -1,5 +1,5 @@
 
-#line 1 "excelsior_reader.rl"
+#line 1 "ext/excelsior_reader/excelsior_reader.rl"
 #include <ruby.h>
 
 static ID s_read;
@@ -8,11 +8,11 @@ int has_found = 0;
 #define BUFSIZE 16384
 
 
-#line 23 "excelsior_reader.rl"
+#line 23 "ext/excelsior_reader/excelsior_reader.rl"
 
  
 
-#line 16 "excelsior_reader.c"
+#line 16 "ext/excelsior_reader/excelsior_reader.c"
 static const char _excelsior_scan_actions[] = {
 	0, 1, 2, 1, 7, 1, 8, 1, 
 	9, 1, 10, 1, 11, 2, 0, 1, 
@@ -71,7 +71,7 @@ static const int excelsior_scan_error = 0;
 static const int excelsior_scan_en_main = 2;
 
 
-#line 26 "excelsior_reader.rl"
+#line 26 "ext/excelsior_reader/excelsior_reader.rl"
 
 
 VALUE e_rows(int argc, VALUE *argv, VALUE self) {
@@ -92,7 +92,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
   
   
-#line 96 "excelsior_reader.c"
+#line 96 "ext/excelsior_reader/excelsior_reader.c"
 	{
 	cs = excelsior_scan_start;
 	ts = 0;
@@ -100,7 +100,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 	act = 0;
 	}
 
-#line 46 "excelsior_reader.rl"
+#line 46 "ext/excelsior_reader/excelsior_reader.rl"
   
   while(!done) {
   
@@ -116,12 +116,11 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     } else { 
       // Going to assume it's a string and already in memory
       //str = io;
-      len = buffer_size = RSTRING_LEN(io);
-      memcpy(p, StringValuePtr(io), len);
-      space = buffer_size - have;
-      pe = p + buffer_size;
-      eof = pe;
-      done = 1;
+	  p = RSTRING_PTR(io);
+      len = RSTRING_LEN(io) + 1;
+      pe = p + len;
+	  eof = pe;
+	  done = 1;
     }
   
     if(len < space) {
@@ -134,7 +133,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     }
   
     
-#line 138 "excelsior_reader.c"
+#line 137 "ext/excelsior_reader/excelsior_reader.c"
 	{
 	int _klen;
 	unsigned int _trans;
@@ -152,10 +151,10 @@ _resume:
 	while ( _nacts-- > 0 ) {
 		switch ( *_acts++ ) {
 	case 2:
-#line 1 "excelsior_reader.rl"
+#line 1 "ext/excelsior_reader/excelsior_reader.rl"
 	{ts = p;}
 	break;
-#line 159 "excelsior_reader.c"
+#line 158 "ext/excelsior_reader/excelsior_reader.c"
 		}
 	}
 
@@ -221,39 +220,39 @@ _eof_trans:
 		switch ( *_acts++ )
 		{
 	case 3:
-#line 1 "excelsior_reader.rl"
+#line 1 "ext/excelsior_reader/excelsior_reader.rl"
 	{te = p+1;}
 	break;
 	case 4:
-#line 18 "excelsior_reader.rl"
+#line 18 "ext/excelsior_reader/excelsior_reader.rl"
 	{act = 2;}
 	break;
 	case 5:
-#line 19 "excelsior_reader.rl"
+#line 19 "ext/excelsior_reader/excelsior_reader.rl"
 	{act = 3;}
 	break;
 	case 6:
-#line 20 "excelsior_reader.rl"
+#line 20 "ext/excelsior_reader/excelsior_reader.rl"
 	{act = 4;}
 	break;
 	case 7:
-#line 17 "excelsior_reader.rl"
+#line 17 "ext/excelsior_reader/excelsior_reader.rl"
 	{te = p+1;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 8:
-#line 21 "excelsior_reader.rl"
+#line 21 "ext/excelsior_reader/excelsior_reader.rl"
 	{te = p+1;{ if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;}}
 	break;
 	case 9:
-#line 17 "excelsior_reader.rl"
+#line 17 "ext/excelsior_reader/excelsior_reader.rl"
 	{te = p;p--;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 10:
-#line 20 "excelsior_reader.rl"
+#line 20 "ext/excelsior_reader/excelsior_reader.rl"
 	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
 	break;
 	case 11:
-#line 1 "excelsior_reader.rl"
+#line 1 "ext/excelsior_reader/excelsior_reader.rl"
 	{	switch( act ) {
 	case 0:
 	{{cs = 0; goto _again;}}
@@ -270,7 +269,7 @@ _eof_trans:
 	}
 	}
 	break;
-#line 274 "excelsior_reader.c"
+#line 273 "ext/excelsior_reader/excelsior_reader.c"
 		}
 	}
 
@@ -280,14 +279,14 @@ _again:
 	while ( _nacts-- > 0 ) {
 		switch ( *_acts++ ) {
 	case 0:
-#line 1 "excelsior_reader.rl"
+#line 1 "ext/excelsior_reader/excelsior_reader.rl"
 	{ts = 0;}
 	break;
 	case 1:
-#line 1 "excelsior_reader.rl"
+#line 1 "ext/excelsior_reader/excelsior_reader.rl"
 	{act = 0;}
 	break;
-#line 291 "excelsior_reader.c"
+#line 290 "ext/excelsior_reader/excelsior_reader.c"
 		}
 	}
 
@@ -307,7 +306,7 @@ _again:
 	_out: {}
 	}
 
-#line 79 "excelsior_reader.rl"
+#line 78 "ext/excelsior_reader/excelsior_reader.rl"
     
     if(ts != 0) { // we are not at the end
       have = pe - ts; //so copy stuff back in
