@@ -117,7 +117,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
       // Going to assume it's a string and already in memory
       //str = io;
 	  p = RSTRING_PTR(io);
-      len = RSTRING_LEN(io) + 1;
+      len = RSTRING_LEN(io);
       pe = p + len;
 	  eof = pe;
 	  done = 1;
