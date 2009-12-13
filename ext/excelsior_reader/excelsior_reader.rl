@@ -83,8 +83,8 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 	int first_run = 1;
   arr = rb_ary_new();
   rb_scan_args(argc, argv, "11", &io, &format);
-	if(NIL_P(format)) format = rb_str_new2("csv");
-	
+	if(NIL_P(format)) format = rb_str_new2(",");
+
 	%% write init;
   
   is_io = rb_respond_to(io, s_read);
