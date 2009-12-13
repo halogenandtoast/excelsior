@@ -6,20 +6,63 @@ int has_found = 0;
 #define BUFSIZE 16384
 
 %%{
-   machine excelsior_scan;
-   delimiter = ",";
-   newline = "\r"? "\n" | "\r";
-   string_character = any - '"';
-   letter = string_character - delimiter - newline;
-   string = '"' (string_character | '""')* '"' ;
-   value = letter+;
-   main := |*
-		 newline { if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
-     space;
-     value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
-     string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
-     delimiter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
-   *|;
+	machine excelsior_scan;
+		
+	csv_delimiter = ',';
+	tsv_delimiter = '\t';
+	psv_delimiter = '|';
+	ssv_delimiter = ';';
+	
+	newline = "\r"? "\n" | "\r";
+	string_character = any - '"';
+	string = '"' (string_character | '""')* '"' ;
+	
+	csv_letter = string_character - csv_delimiter - newline;
+	tsv_letter = string_character - tsv_delimiter - newline;
+	psv_letter = string_character - psv_delimiter - newline;
+	ssv_letter = string_character - ssv_delimiter - newline;
+	
+	csv_value = csv_letter+;
+	tsv_value = tsv_letter+;
+	psv_value = psv_letter+;
+	ssv_value = ssv_letter+;
+	
+	main := |*
+		csv_delimiter { fgoto csv; };
+		tsv_delimiter { fgoto tsv; };
+		psv_delimiter { fgoto psv; };
+		ssv_delimiter { fgoto ssv; };
+	*|;
+	
+	csv := |*
+		newline { if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
+		space;
+		csv_value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
+		string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
+		csv_delimiter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
+	*|;
+	tsv := |*
+		newline { if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
+		space;
+		tsv_value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
+		string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
+		tsv_delimiter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
+	*|;
+	psv := |*
+		newline { if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
+		space;
+		psv_value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
+		string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
+		psv_delimiter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
+	*|;
+	ssv := |*
+		newline { if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
+		space;
+		ssv_value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
+		string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
+		ssv_delimiter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
+	*|;
+	
 }%%
  
 %% write data nofinal; 
@@ -29,26 +72,28 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   
   int cs, act, have = 0, nread = 0, curline = 1, text = 0;
   char *ts = 0, *te = 0, *buf = NULL, *eof = NULL;
+	char *p, *pe;
   int buffer_size = BUFSIZE;
   
   has_found = 0;
   VALUE io;
+  VALUE format;
   int is_io = 0;
   int done = 0;
-  
+	int first_run = 1;
   arr = rb_ary_new();
-  rb_scan_args(argc, argv, "1", &io);
+  rb_scan_args(argc, argv, "11", &io, &format);
+	if(NIL_P(format)) format = rb_str_new2("csv");
+	
+	%% write init;
   
   is_io = rb_respond_to(io, s_read);
   buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
-  
-  %% write init;
-  
+	  
   while(!done) {
   
     int len, space = buffer_size - have;
     VALUE str;
-    char *p, *pe;
     p = buf + have;
   
     if(is_io) {
@@ -58,11 +103,12 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     } else { 
       // Going to assume it's a string and already in memory
       //str = io;
-	  p = RSTRING_PTR(io);
+			io = rb_str_buf_append(format, io);
+	  	p = RSTRING_PTR(io);
       len = RSTRING_LEN(io);
       pe = p + len;
-	  eof = pe;
-	  done = 1;
+	  	eof = pe;
+	  	done = 1;
     }
   
     if(len < space) {
