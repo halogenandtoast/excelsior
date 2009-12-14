@@ -8,7 +8,7 @@ int has_found = 0;
 #define BUFSIZE 16384
 
 
-#line 66 "excelsior_reader.rl"
+#line 67 "excelsior_reader.rl"
 
  
 
@@ -121,7 +121,7 @@ static const int excelsior_scan_en_psv = 14;
 static const int excelsior_scan_en_ssv = 18;
 
 
-#line 69 "excelsior_reader.rl"
+#line 70 "excelsior_reader.rl"
 
 
 VALUE e_rows(int argc, VALUE *argv, VALUE self) {
@@ -150,7 +150,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 	act = 0;
 	}
 
-#line 89 "excelsior_reader.rl"
+#line 90 "excelsior_reader.rl"
   
   is_io = rb_respond_to(io, s_read);
   buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
@@ -163,6 +163,10 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   
     if(is_io) {
       str = rb_funcall(io, s_read, 1, INT2FIX(space));
+			if(first_run) {
+				str = rb_str_buf_append(format, str);
+				first_run = 0;
+			} 
       len = RSTRING_LEN(str);
       memcpy(p, StringValuePtr(str), len);
     } else { 
@@ -186,7 +190,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     }
   
     
-#line 190 "excelsior_reader.c"
+#line 194 "excelsior_reader.c"
 	{
 	int _klen;
 	unsigned int _trans;
@@ -207,7 +211,7 @@ _resume:
 #line 1 "excelsior_reader.rl"
 	{ts = p;}
 	break;
-#line 211 "excelsior_reader.c"
+#line 215 "excelsior_reader.c"
 		}
 	}
 
@@ -277,47 +281,47 @@ _eof_trans:
 	{te = p+1;}
 	break;
 	case 4:
-#line 31 "excelsior_reader.rl"
+#line 32 "excelsior_reader.rl"
 	{te = p+1;{ {cs = 6; goto _again;} }}
 	break;
 	case 5:
-#line 32 "excelsior_reader.rl"
+#line 33 "excelsior_reader.rl"
 	{te = p+1;{ {cs = 10; goto _again;} }}
 	break;
 	case 6:
-#line 33 "excelsior_reader.rl"
+#line 34 "excelsior_reader.rl"
 	{te = p+1;{ {cs = 14; goto _again;} }}
 	break;
 	case 7:
-#line 34 "excelsior_reader.rl"
+#line 35 "excelsior_reader.rl"
 	{te = p+1;{ {cs = 18; goto _again;} }}
 	break;
 	case 8:
-#line 39 "excelsior_reader.rl"
+#line 40 "excelsior_reader.rl"
 	{act = 6;}
 	break;
 	case 9:
-#line 40 "excelsior_reader.rl"
+#line 41 "excelsior_reader.rl"
 	{act = 7;}
 	break;
 	case 10:
-#line 41 "excelsior_reader.rl"
+#line 42 "excelsior_reader.rl"
 	{act = 8;}
 	break;
 	case 11:
-#line 38 "excelsior_reader.rl"
+#line 39 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 12:
-#line 42 "excelsior_reader.rl"
+#line 43 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;}}
 	break;
 	case 13:
-#line 38 "excelsior_reader.rl"
+#line 39 "excelsior_reader.rl"
 	{te = p;p--;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 14:
-#line 41 "excelsior_reader.rl"
+#line 42 "excelsior_reader.rl"
 	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
 	break;
 	case 15:
@@ -339,31 +343,31 @@ _eof_trans:
 	}
 	break;
 	case 16:
-#line 46 "excelsior_reader.rl"
+#line 47 "excelsior_reader.rl"
 	{act = 11;}
 	break;
 	case 17:
-#line 47 "excelsior_reader.rl"
+#line 48 "excelsior_reader.rl"
 	{act = 12;}
 	break;
 	case 18:
-#line 48 "excelsior_reader.rl"
+#line 49 "excelsior_reader.rl"
 	{act = 13;}
 	break;
 	case 19:
-#line 45 "excelsior_reader.rl"
+#line 46 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 20:
-#line 46 "excelsior_reader.rl"
+#line 47 "excelsior_reader.rl"
 	{te = p+1;}
 	break;
 	case 21:
-#line 45 "excelsior_reader.rl"
+#line 46 "excelsior_reader.rl"
 	{te = p;p--;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 22:
-#line 48 "excelsior_reader.rl"
+#line 49 "excelsior_reader.rl"
 	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
 	break;
 	case 23:
@@ -385,31 +389,31 @@ _eof_trans:
 	}
 	break;
 	case 24:
-#line 53 "excelsior_reader.rl"
+#line 54 "excelsior_reader.rl"
 	{act = 16;}
 	break;
 	case 25:
-#line 54 "excelsior_reader.rl"
+#line 55 "excelsior_reader.rl"
 	{act = 17;}
 	break;
 	case 26:
-#line 55 "excelsior_reader.rl"
+#line 56 "excelsior_reader.rl"
 	{act = 18;}
 	break;
 	case 27:
-#line 52 "excelsior_reader.rl"
+#line 53 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 28:
-#line 56 "excelsior_reader.rl"
+#line 57 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;}}
 	break;
 	case 29:
-#line 52 "excelsior_reader.rl"
+#line 53 "excelsior_reader.rl"
 	{te = p;p--;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 30:
-#line 55 "excelsior_reader.rl"
+#line 56 "excelsior_reader.rl"
 	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
 	break;
 	case 31:
@@ -431,31 +435,31 @@ _eof_trans:
 	}
 	break;
 	case 32:
-#line 60 "excelsior_reader.rl"
+#line 61 "excelsior_reader.rl"
 	{act = 21;}
 	break;
 	case 33:
-#line 61 "excelsior_reader.rl"
+#line 62 "excelsior_reader.rl"
 	{act = 22;}
 	break;
 	case 34:
-#line 62 "excelsior_reader.rl"
+#line 63 "excelsior_reader.rl"
 	{act = 23;}
 	break;
 	case 35:
-#line 59 "excelsior_reader.rl"
+#line 60 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 36:
-#line 63 "excelsior_reader.rl"
+#line 64 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;}}
 	break;
 	case 37:
-#line 59 "excelsior_reader.rl"
+#line 60 "excelsior_reader.rl"
 	{te = p;p--;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
 	break;
 	case 38:
-#line 62 "excelsior_reader.rl"
+#line 63 "excelsior_reader.rl"
 	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
 	break;
 	case 39:
@@ -476,7 +480,7 @@ _eof_trans:
 	}
 	}
 	break;
-#line 480 "excelsior_reader.c"
+#line 484 "excelsior_reader.c"
 		}
 	}
 
@@ -493,7 +497,7 @@ _again:
 #line 1 "excelsior_reader.rl"
 	{act = 0;}
 	break;
-#line 497 "excelsior_reader.c"
+#line 501 "excelsior_reader.c"
 		}
 	}
 
@@ -513,7 +517,7 @@ _again:
 	_out: {}
 	}
 
-#line 124 "excelsior_reader.rl"
+#line 129 "excelsior_reader.rl"
     
     if(ts != 0) { // we are not at the end
       have = pe - ts; //so copy stuff back in

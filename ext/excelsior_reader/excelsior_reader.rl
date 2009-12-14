@@ -7,11 +7,12 @@ int has_found = 0;
 
 %%{
 	machine excelsior_scan;
-		
+
 	csv_delimiter = ',';
 	tsv_delimiter = '\t';
 	psv_delimiter = '|';
 	ssv_delimiter = ';';
+	
 	
 	newline = "\r"? "\n" | "\r";
 	string_character = any - '"';
@@ -98,6 +99,10 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   
     if(is_io) {
       str = rb_funcall(io, s_read, 1, INT2FIX(space));
+			if(first_run) {
+				str = rb_str_buf_append(format, str);
+				first_run = 0;
+			} 
       len = RSTRING_LEN(str);
       memcpy(p, StringValuePtr(str), len);
     } else { 
