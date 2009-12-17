@@ -1,7 +1,7 @@
 #include <ruby.h>
 
 static ID s_read;
-VALUE arr;
+
 int has_found = 0;
 #define BUFSIZE 16384
 
@@ -77,6 +77,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   int buffer_size = BUFSIZE;
   
   has_found = 0;
+	VALUE arr;
   VALUE io;
   VALUE format;
   int is_io = 0;
@@ -98,24 +99,23 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     p = buf + have;
   
     if(is_io) {
-      str = rb_funcall(io, s_read, 1, INT2FIX(space));
+			str = rb_funcall(io, s_read, 1, INT2FIX(space));
 			if(first_run) {
-				str = rb_str_buf_append(format, str);
+				str = rb_str_append(format, str);
 				first_run = 0;
 			} 
       len = RSTRING_LEN(str);
-      memcpy(p, StringValuePtr(str), len);
+			p = memcpy(p, StringValuePtr(str), len);
     } else { 
       // Going to assume it's a string and already in memory
       //str = io;
-			io = rb_str_buf_append(format, io);
+			io = rb_str_append(format, io);
 	  	p = RSTRING_PTR(io);
       len = RSTRING_LEN(io);
       pe = p + len;
 	  	eof = pe;
 	  	done = 1;
     }
-  
     if(len < space) {
       done = 1;
       //p[len++] = 0; can't seem to get it to work with this
@@ -124,15 +124,16 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     } else {
       pe = p + len; 
     }
-  
+  	
     %% write exec;
-    
+		
+		
     if(ts != 0) { // we are not at the end
-      have = pe - ts; //so copy stuff back in
-      memmove(buf, ts, have);
-      te = buf + (te - ts);
-      ts = buf;
-    }   
+			have = pe - ts; //so copy stuff back in
+			memmove(buf, ts, have);
+			te = buf + (te - ts);
+			ts = buf;
+		}   
     
   }
   
