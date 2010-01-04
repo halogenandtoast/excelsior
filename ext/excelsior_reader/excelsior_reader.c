@@ -1,18 +1,22 @@
 
-#line 1 "ext/excelsior_reader/excelsior_reader.rl"
+#line 1 "excelsior_reader.rl"
 #include <ruby.h>
 
 static ID s_read;
 VALUE arr;
+VALUE header_row;
+int row_index = 0;
+int header = 0;
+int is_header_row = 0;
 int has_found = 0;
 #define BUFSIZE 16384
 
 
-#line 23 "ext/excelsior_reader/excelsior_reader.rl"
+#line 46 "excelsior_reader.rl"
 
  
 
-#line 16 "ext/excelsior_reader/excelsior_reader.c"
+#line 20 "excelsior_reader.c"
 static const char _excelsior_scan_actions[] = {
 	0, 1, 2, 1, 7, 1, 8, 1, 
 	9, 1, 10, 1, 11, 2, 0, 1, 
@@ -71,7 +75,7 @@ static const int excelsior_scan_error = 0;
 static const int excelsior_scan_en_main = 2;
 
 
-#line 26 "ext/excelsior_reader/excelsior_reader.rl"
+#line 49 "excelsior_reader.rl"
 
 
 VALUE e_rows(int argc, VALUE *argv, VALUE self) {
@@ -82,17 +86,24 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   
   has_found = 0;
   VALUE io;
+	VALUE options;
   int is_io = 0;
   int done = 0;
   
   arr = rb_ary_new();
-  rb_scan_args(argc, argv, "1", &io);
-  
+  rb_scan_args(argc, argv, "11", &io, &options);
+	if(options != Qnil) {
+		header = rb_hash_aref(options, ID2SYM(rb_intern("header"))) == 2;
+	}
+	if(header == 1) {
+		is_header_row = 1;
+		header_row = rb_ary_new();
+	}
   is_io = rb_respond_to(io, s_read);
   buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
   
   
-#line 96 "ext/excelsior_reader/excelsior_reader.c"
+#line 107 "excelsior_reader.c"
 	{
 	cs = excelsior_scan_start;
 	ts = 0;
@@ -100,7 +111,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 	act = 0;
 	}
 
-#line 46 "ext/excelsior_reader/excelsior_reader.rl"
+#line 76 "excelsior_reader.rl"
   
   while(!done) {
   
@@ -133,7 +144,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     }
   
     
-#line 137 "ext/excelsior_reader/excelsior_reader.c"
+#line 148 "excelsior_reader.c"
 	{
 	int _klen;
 	unsigned int _trans;
@@ -151,10 +162,10 @@ _resume:
 	while ( _nacts-- > 0 ) {
 		switch ( *_acts++ ) {
 	case 2:
-#line 1 "ext/excelsior_reader/excelsior_reader.rl"
+#line 1 "excelsior_reader.rl"
 	{ts = p;}
 	break;
-#line 158 "ext/excelsior_reader/excelsior_reader.c"
+#line 169 "excelsior_reader.c"
 		}
 	}
 
@@ -220,48 +231,86 @@ _eof_trans:
 		switch ( *_acts++ )
 		{
 	case 3:
-#line 1 "ext/excelsior_reader/excelsior_reader.rl"
+#line 1 "excelsior_reader.rl"
 	{te = p+1;}
 	break;
 	case 4:
-#line 18 "ext/excelsior_reader/excelsior_reader.rl"
+#line 41 "excelsior_reader.rl"
 	{act = 2;}
 	break;
 	case 5:
-#line 19 "ext/excelsior_reader/excelsior_reader.rl"
+#line 42 "excelsior_reader.rl"
 	{act = 3;}
 	break;
 	case 6:
-#line 20 "ext/excelsior_reader/excelsior_reader.rl"
+#line 43 "excelsior_reader.rl"
 	{act = 4;}
 	break;
 	case 7:
-#line 17 "ext/excelsior_reader/excelsior_reader.rl"
-	{te = p+1;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
+#line 21 "excelsior_reader.rl"
+	{te = p+1;{ 
+				if(has_found ==0) {
+					rb_ary_push((is_header_row ? header_row : arr), Qnil); 
+				}
+				if(!is_header_row) {
+					if(header == 1) {
+						VALUE hash = rb_hash_new();
+						int i = 0;
+						for(i = 0; i < RARRAY_LEN(header_row); i++) {
+							rb_hash_aset(hash, rb_ary_entry(header_row, i), rb_ary_entry(arr, i));
+						}
+						rb_yield(hash);
+					} else {
+						rb_yield(arr); 
+					}
+				}
+				arr = rb_ary_new(); 
+				has_found = 0; 
+				is_header_row = 0;
+		 }}
 	break;
 	case 8:
-#line 21 "ext/excelsior_reader/excelsior_reader.rl"
-	{te = p+1;{ if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;}}
+#line 44 "excelsior_reader.rl"
+	{te = p+1;{ if(has_found == 0) rb_ary_push((is_header_row ? header_row : arr), Qnil); has_found = 0;}}
 	break;
 	case 9:
-#line 17 "ext/excelsior_reader/excelsior_reader.rl"
-	{te = p;p--;{ if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; }}
+#line 21 "excelsior_reader.rl"
+	{te = p;p--;{ 
+				if(has_found ==0) {
+					rb_ary_push((is_header_row ? header_row : arr), Qnil); 
+				}
+				if(!is_header_row) {
+					if(header == 1) {
+						VALUE hash = rb_hash_new();
+						int i = 0;
+						for(i = 0; i < RARRAY_LEN(header_row); i++) {
+							rb_hash_aset(hash, rb_ary_entry(header_row, i), rb_ary_entry(arr, i));
+						}
+						rb_yield(hash);
+					} else {
+						rb_yield(arr); 
+					}
+				}
+				arr = rb_ary_new(); 
+				has_found = 0; 
+				is_header_row = 0;
+		 }}
 	break;
 	case 10:
-#line 20 "ext/excelsior_reader/excelsior_reader.rl"
-	{te = p;p--;{ rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
+#line 43 "excelsior_reader.rl"
+	{te = p;p--;{ rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
 	break;
 	case 11:
-#line 1 "ext/excelsior_reader/excelsior_reader.rl"
+#line 1 "excelsior_reader.rl"
 	{	switch( act ) {
 	case 0:
 	{{cs = 0; goto _again;}}
 	break;
 	case 3:
-	{{p = ((te))-1;} rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;}
+	{{p = ((te))-1;} rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts, te - ts)); has_found = 1;}
 	break;
 	case 4:
-	{{p = ((te))-1;} rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}
+	{{p = ((te))-1;} rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}
 	break;
 	default:
 	{{p = ((te))-1;}}
@@ -269,7 +318,7 @@ _eof_trans:
 	}
 	}
 	break;
-#line 273 "ext/excelsior_reader/excelsior_reader.c"
+#line 322 "excelsior_reader.c"
 		}
 	}
 
@@ -279,14 +328,14 @@ _again:
 	while ( _nacts-- > 0 ) {
 		switch ( *_acts++ ) {
 	case 0:
-#line 1 "ext/excelsior_reader/excelsior_reader.rl"
+#line 1 "excelsior_reader.rl"
 	{ts = 0;}
 	break;
 	case 1:
-#line 1 "ext/excelsior_reader/excelsior_reader.rl"
+#line 1 "excelsior_reader.rl"
 	{act = 0;}
 	break;
-#line 290 "ext/excelsior_reader/excelsior_reader.c"
+#line 339 "excelsior_reader.c"
 		}
 	}
 
@@ -306,7 +355,7 @@ _again:
 	_out: {}
 	}
 
-#line 78 "ext/excelsior_reader/excelsior_reader.rl"
+#line 108 "excelsior_reader.rl"
     
     if(ts != 0) { // we are not at the end
       have = pe - ts; //so copy stuff back in
@@ -318,7 +367,18 @@ _again:
   }
   
   if(RARRAY_LEN(arr) > 0) { // have a last array to yield
-    rb_yield(arr);
+		if(!is_header_row) {
+			if(header == 1) {
+				VALUE hash = rb_hash_new();
+				int i = 0;
+				for(i = 0; i < RARRAY_LEN(header_row); i++) {
+					rb_hash_aset(hash, rb_ary_entry(header_row, i), rb_ary_entry(arr, i));
+				}
+				rb_yield(hash);
+			} else {
+				rb_yield(arr); 
+			}
+		}
   }
   
   return Qnil;

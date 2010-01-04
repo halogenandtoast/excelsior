@@ -2,6 +2,10 @@
 
 static ID s_read;
 VALUE arr;
+VALUE header_row;
+int row_index = 0;
+int header = 0;
+int is_header_row = 0;
 int has_found = 0;
 #define BUFSIZE 16384
 
@@ -14,11 +18,30 @@ int has_found = 0;
    string = '"' (string_character | '""')* '"' ;
    value = letter+;
    main := |*
-		 newline { if(has_found ==0) rb_ary_push(arr, Qnil); rb_yield(arr); arr = rb_ary_new(); has_found = 0; };
+		 newline { 
+				if(has_found ==0) {
+					rb_ary_push((is_header_row ? header_row : arr), Qnil); 
+				}
+				if(!is_header_row) {
+					if(header == 1) {
+						VALUE hash = rb_hash_new();
+						int i = 0;
+						for(i = 0; i < RARRAY_LEN(header_row); i++) {
+							rb_hash_aset(hash, rb_ary_entry(header_row, i), rb_ary_entry(arr, i));
+						}
+						rb_yield(hash);
+					} else {
+						rb_yield(arr); 
+					}
+				}
+				arr = rb_ary_new(); 
+				has_found = 0; 
+				is_header_row = 0;
+		 };
      space;
-     value { rb_ary_push(arr, rb_str_new(ts, te - ts)); has_found = 1;};
-     string { rb_ary_push(arr, rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
-     delimiter { if(has_found == 0) rb_ary_push(arr, Qnil); has_found = 0;};
+     value { rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts, te - ts)); has_found = 1;};
+     string { rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
+     delimiter { if(has_found == 0) rb_ary_push((is_header_row ? header_row : arr), Qnil); has_found = 0;};
    *|;
 }%%
  
@@ -33,12 +56,19 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   
   has_found = 0;
   VALUE io;
+	VALUE options;
   int is_io = 0;
   int done = 0;
   
   arr = rb_ary_new();
-  rb_scan_args(argc, argv, "1", &io);
-  
+  rb_scan_args(argc, argv, "11", &io, &options);
+	if(options != Qnil) {
+		header = rb_hash_aref(options, ID2SYM(rb_intern("header"))) == 2;
+	}
+	if(header == 1) {
+		is_header_row = 1;
+		header_row = rb_ary_new();
+	}
   is_io = rb_respond_to(io, s_read);
   buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
   
@@ -86,7 +116,18 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   }
   
   if(RARRAY_LEN(arr) > 0) { // have a last array to yield
-    rb_yield(arr);
+		if(!is_header_row) {
+			if(header == 1) {
+				VALUE hash = rb_hash_new();
+				int i = 0;
+				for(i = 0; i < RARRAY_LEN(header_row); i++) {
+					rb_hash_aset(hash, rb_ary_entry(header_row, i), rb_ary_entry(arr, i));
+				}
+				rb_yield(hash);
+			} else {
+				rb_yield(arr); 
+			}
+		}
   }
   
   return Qnil;
