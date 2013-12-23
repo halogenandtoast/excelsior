@@ -1,3 +1,5 @@
 *.gem
 .DS_Store
 *.o
+*.bundle
+tmp

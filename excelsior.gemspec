@@ -1,60 +1,25 @@
---- !ruby/object:Gem::Specification 
-name: excelsior
-version: !ruby/object:Gem::Version 
-  version: 0.0.9
-platform: ruby
-authors: 
-- Matthew Mongeau
-autorequire: 
-bindir: bin
-cert_chain: []
+# -*- encoding: utf-8 -*-
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-date: 2009-12-10 00:00:00 -05:00
-default_executable: 
-dependencies: []
+require 'excelsior/version'
 
-description: A Ruby gem that uses C bindings to read CSV files superfast. I'm totally serial!
-email: matt@toastyapps.com
-executables: []
 
-extensions: 
-- ext/excelsior_reader/extconf.rb
-extra_rdoc_files: []
+Gem::Specification.new do |gem|
+  gem.name = "excelsior"
+  gem.version = Excelsior::VERSION
+  gem.authors = ["Matthew Mongeau"]
+  gem.email = "halogenandtoast@gmail.com"
+  gem.description = "A Ruby gem that uses C bindings to read CSV files superfast. I'm totally serial!"
+  gem.files = ["lib/excelsior.rb"]
+  gem.extensions << 'ext/excelsior_reader/extconf.rb'
+  gem.homepage = "https://github.com/halogenandtoast/excelsior"
+  gem.license = "MIT"
+  gem.summary = "A Ruby gem that uses C bindings to read CSV files superfast. I'm totally serial!"
+  gem.require_paths = ["lib"]
 
-files: 
-- Rakefile
-- lib/excelsior.rb
-- ext/excelsior_reader/excelsior_reader.c
-- ext/excelsior_reader/extconf.rb
-- ext/excelsior_reader/excelsior_reader.rl
-- ext/excelsior_reader/excelsior_reader.c
-has_rdoc: true
-homepage: http://github.com/toastyapps/excelsior
-licenses: []
-
-post_install_message: 
-rdoc_options: []
-
-require_paths: 
-- lib
-required_ruby_version: !ruby/object:Gem::Requirement 
-  requirements: 
-  - - ">="
-    - !ruby/object:Gem::Version 
-      version: "0"
-  version: 
-required_rubygems_version: !ruby/object:Gem::Requirement 
-  requirements: 
-  - - ">="
-    - !ruby/object:Gem::Version 
-      version: "0"
-  version: 
-requirements: []
-
-rubyforge_project: 
-rubygems_version: 1.3.5
-signing_key: 
-specification_version: 3
-summary: A Ruby gem that uses C bindings to read CSV files superfast. I'm totally serial!
-test_files: []
-
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'simplecov'
+  gem.add_development_dependency 'rake-compiler'
+end
