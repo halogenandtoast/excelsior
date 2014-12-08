@@ -35,4 +35,14 @@ describe Excelsior::Reader do
     end
     expect(data).to eq("a=>1,b=>2,c=>3")
   end
+
+  it "returns empty lines as empty arrays" do
+    csv = StringIO.new("\n\n\n")
+    data = []
+    Excelsior::Reader.rows(csv) do |row|
+      data << row
+    end
+
+    expect(data).to eq([[], [], []])
+  end
 end

@@ -13,7 +13,7 @@ static int is_header_row = 0;
 static int has_found = 0;
 
 
-#line 48 "excelsior_reader.rl"
+#line 45 "excelsior_reader.rl"
 
 
 
@@ -24,7 +24,7 @@ static const int excelsior_scan_error = 0;
 static const int excelsior_scan_en_main = 2;
 
 
-#line 51 "excelsior_reader.rl"
+#line 48 "excelsior_reader.rl"
 
 
 VALUE e_rows(int argc, VALUE *argv, VALUE self) {
@@ -33,6 +33,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   char *ts = 0, *te = 0, *buf = NULL, *eof = NULL;
   int buffer_size = EXCELSIOR_BUFSIZE;
 
+  header = 0;
   has_found = 0;
   VALUE io;
   VALUE options;
@@ -52,7 +53,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
 
   
-#line 56 "excelsior_reader.c"
+#line 57 "excelsior_reader.c"
 	{
 	cs = excelsior_scan_start;
 	ts = 0;
@@ -60,7 +61,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 	act = 0;
 	}
 
-#line 78 "excelsior_reader.rl"
+#line 76 "excelsior_reader.rl"
 
   while(!done) {
 
@@ -96,7 +97,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     }
 
     
-#line 100 "excelsior_reader.c"
+#line 101 "excelsior_reader.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -123,9 +124,6 @@ tr0:
 tr5:
 #line 23 "excelsior_reader.rl"
 	{te = p+1;{
-      if(has_found ==0) {
-        rb_ary_push((is_header_row ? header_row : arr), Qnil);
-      }
       if(!is_header_row) {
         if(header == 1) {
           VALUE hash = rb_hash_new();
@@ -144,15 +142,12 @@ tr5:
     }}
 	goto st2;
 tr7:
-#line 46 "excelsior_reader.rl"
+#line 43 "excelsior_reader.rl"
 	{te = p+1;{ if(has_found == 0) rb_ary_push((is_header_row ? header_row : arr), Qnil); has_found = 0;}}
 	goto st2;
 tr8:
 #line 23 "excelsior_reader.rl"
 	{te = p;p--;{
-      if(has_found ==0) {
-        rb_ary_push((is_header_row ? header_row : arr), Qnil);
-      }
       if(!is_header_row) {
         if(header == 1) {
           VALUE hash = rb_hash_new();
@@ -171,7 +166,7 @@ tr8:
     }}
 	goto st2;
 tr9:
-#line 45 "excelsior_reader.rl"
+#line 42 "excelsior_reader.rl"
 	{te = p;p--;{ rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
 	goto st2;
 st2:
@@ -184,7 +179,7 @@ st2:
 case 2:
 #line 1 "NONE"
 	{ts = p;}
-#line 188 "excelsior_reader.c"
+#line 183 "excelsior_reader.c"
 	switch( (*p) ) {
 		case 10: goto tr5;
 		case 13: goto st4;
@@ -198,20 +193,20 @@ case 2:
 tr3:
 #line 1 "NONE"
 	{te = p+1;}
-#line 44 "excelsior_reader.rl"
+#line 41 "excelsior_reader.rl"
 	{act = 3;}
 	goto st3;
 tr4:
 #line 1 "NONE"
 	{te = p+1;}
-#line 43 "excelsior_reader.rl"
+#line 40 "excelsior_reader.rl"
 	{act = 2;}
 	goto st3;
 st3:
 	if ( ++p == pe )
 		goto _test_eof3;
 case 3:
-#line 215 "excelsior_reader.c"
+#line 210 "excelsior_reader.c"
 	switch( (*p) ) {
 		case 10: goto tr0;
 		case 13: goto tr0;
@@ -236,14 +231,14 @@ case 1:
 tr2:
 #line 1 "NONE"
 	{te = p+1;}
-#line 45 "excelsior_reader.rl"
+#line 42 "excelsior_reader.rl"
 	{act = 4;}
 	goto st5;
 st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 247 "excelsior_reader.c"
+#line 242 "excelsior_reader.c"
 	if ( (*p) == 34 )
 		goto st1;
 	goto tr9;
@@ -271,7 +266,7 @@ cs = 0;
 	_out: {}
 	}
 
-#line 113 "excelsior_reader.rl"
+#line 111 "excelsior_reader.rl"
 
     if(ts != 0) { // we are not at the end
       have = pe - ts; //so copy stuff back in

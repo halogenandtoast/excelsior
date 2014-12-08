@@ -21,9 +21,6 @@ static int has_found = 0;
 
   main := |*
     newline {
-      if(has_found ==0) {
-        rb_ary_push((is_header_row ? header_row : arr), Qnil);
-      }
       if(!is_header_row) {
         if(header == 1) {
           VALUE hash = rb_hash_new();
@@ -56,6 +53,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
   char *ts = 0, *te = 0, *buf = NULL, *eof = NULL;
   int buffer_size = EXCELSIOR_BUFSIZE;
 
+  header = 0;
   has_found = 0;
   VALUE io;
   VALUE options;
