@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.authors = ["Matthew Mongeau"]
   gem.email = "halogenandtoast@gmail.com"
   gem.description = "A Ruby gem that uses C bindings to read CSV files superfast. I'm totally serial!"
-  gem.files = ["lib/excelsior.rb"]
+  gem.files = ["ext/excelsior_reader/excelsior_reader.c", "lib/excelsior.rb"]
   gem.extensions << 'ext/excelsior_reader/extconf.rb'
   gem.homepage = "https://github.com/halogenandtoast/excelsior"
   gem.license = "MIT"
