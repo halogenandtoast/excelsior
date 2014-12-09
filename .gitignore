@@ -3,3 +3,4 @@
 *.o
 *.bundle
 tmp
+excelsior_reader.c

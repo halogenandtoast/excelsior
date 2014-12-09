@@ -6,7 +6,6 @@ static VALUE eExcelsiorMalformedCSVError;
 static ID s_read;
 static VALUE arr;
 static VALUE header_row;
-static int row_index = 0;
 static int header = 0;
 static int is_header_row = 0;
 static int has_found = 0;
@@ -50,16 +49,17 @@ static int has_found = 0;
 
 VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 
-  int cs, act, have = 0, nread = 0, curline = 1, text = 0;
+  VALUE io;
+  VALUE options;
+
+  int is_io = 0;
+  int done = 0;
+  int cs, act, have = 0;
   char *ts = 0, *te = 0, *buf = NULL, *eof = NULL;
   int buffer_size = EXCELSIOR_BUFSIZE;
 
   header = 0;
   has_found = 0;
-  VALUE io;
-  VALUE options;
-  int is_io = 0;
-  int done = 0;
 
   arr = rb_ary_new();
   rb_scan_args(argc, argv, "11", &io, &options);
