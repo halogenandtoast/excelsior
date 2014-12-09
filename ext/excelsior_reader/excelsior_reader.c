@@ -4,6 +4,7 @@
 
 #define EXCELSIOR_BUFSIZE 16384
 
+static VALUE eExcelsiorMalformedCSVError;
 static ID s_read;
 static VALUE arr;
 static VALUE header_row;
@@ -13,19 +14,18 @@ static int is_header_row = 0;
 static int has_found = 0;
 
 
-#line 45 "excelsior_reader.rl"
+#line 47 "excelsior_reader.rl"
 
 
 
-#line 21 "excelsior_reader.c"
-static const int excelsior_scan_start = 2;
-static const int excelsior_scan_error = 0;
+#line 22 "excelsior_reader.c"
+static const int excelsior_scan_start = 1;
+static const int excelsior_scan_error = -1;
 
-static const int excelsior_scan_en_main = 2;
+static const int excelsior_scan_en_main = 1;
 
 
-#line 48 "excelsior_reader.rl"
-
+#line 50 "excelsior_reader.rl"
 
 VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 
@@ -50,7 +50,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     header_row = rb_ary_new();
   }
   is_io = rb_respond_to(io, s_read);
-  buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
+  buf = (char *) malloc(buffer_size);
 
   
 #line 57 "excelsior_reader.c"
@@ -61,7 +61,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 	act = 0;
 	}
 
-#line 76 "excelsior_reader.rl"
+#line 77 "excelsior_reader.rl"
 
   while(!done) {
 
@@ -78,8 +78,6 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
       len = RSTRING_LEN(str);
       memcpy(p, StringValuePtr(str), len);
     } else {
-      // Going to assume it's a string and already in memory
-      //str = io;
       p = RSTRING_PTR(io);
       len = RSTRING_LEN(io);
       pe = p + len;
@@ -89,7 +87,6 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 
     if(len < space) {
       done = 1;
-      //p[len++] = 0; can't seem to get it to work with this
       pe = p + len;
       eof = pe;
     } else {
@@ -97,7 +94,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     }
 
     
-#line 101 "excelsior_reader.c"
+#line 98 "excelsior_reader.c"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -106,23 +103,23 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 tr0:
 #line 1 "NONE"
 	{	switch( act ) {
-	case 0:
-	{{goto st0;}}
-	break;
 	case 3:
 	{{p = ((te))-1;} rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts, te - ts)); has_found = 1;}
 	break;
 	case 4:
 	{{p = ((te))-1;} rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}
 	break;
+	case 6:
+	{{p = ((te))-1;} rb_raise(eExcelsiorMalformedCSVError, "invalid csv syntax"); }
+	break;
 	default:
 	{{p = ((te))-1;}}
 	break;
 	}
 	}
-	goto st2;
+	goto st1;
 tr5:
-#line 23 "excelsior_reader.rl"
+#line 24 "excelsior_reader.rl"
 	{te = p+1;{
       if(!is_header_row) {
         if(header == 1) {
@@ -140,13 +137,13 @@ tr5:
       has_found = 0;
       is_header_row = 0;
     }}
-	goto st2;
-tr7:
-#line 43 "excelsior_reader.rl"
-	{te = p+1;{ if(has_found == 0) rb_ary_push((is_header_row ? header_row : arr), Qnil); has_found = 0;}}
-	goto st2;
+	goto st1;
 tr8:
-#line 23 "excelsior_reader.rl"
+#line 44 "excelsior_reader.rl"
+	{te = p+1;{ if(has_found == 0) rb_ary_push((is_header_row ? header_row : arr), Qnil); has_found = 0;}}
+	goto st1;
+tr9:
+#line 24 "excelsior_reader.rl"
 	{te = p;p--;{
       if(!is_header_row) {
         if(header == 1) {
@@ -164,28 +161,30 @@ tr8:
       has_found = 0;
       is_header_row = 0;
     }}
-	goto st2;
-tr9:
-#line 42 "excelsior_reader.rl"
+	goto st1;
+tr10:
+#line 45 "excelsior_reader.rl"
+	{te = p;p--;{ rb_raise(eExcelsiorMalformedCSVError, "invalid csv syntax"); }}
+	goto st1;
+tr11:
+#line 43 "excelsior_reader.rl"
 	{te = p;p--;{ rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts + 1, te - ts - 2)); has_found = 1;}}
-	goto st2;
-st2:
+	goto st1;
+st1:
 #line 1 "NONE"
 	{ts = 0;}
-#line 1 "NONE"
-	{act = 0;}
 	if ( ++p == pe )
-		goto _test_eof2;
-case 2:
+		goto _test_eof1;
+case 1:
 #line 1 "NONE"
 	{ts = p;}
-#line 183 "excelsior_reader.c"
+#line 182 "excelsior_reader.c"
 	switch( (*p) ) {
 		case 10: goto tr5;
-		case 13: goto st4;
+		case 13: goto st3;
 		case 32: goto tr4;
-		case 34: goto st1;
-		case 44: goto tr7;
+		case 34: goto tr7;
+		case 44: goto tr8;
 	}
 	if ( 9 <= (*p) && (*p) <= 12 )
 		goto tr4;
@@ -193,20 +192,20 @@ case 2:
 tr3:
 #line 1 "NONE"
 	{te = p+1;}
-#line 41 "excelsior_reader.rl"
+#line 42 "excelsior_reader.rl"
 	{act = 3;}
-	goto st3;
+	goto st2;
 tr4:
 #line 1 "NONE"
 	{te = p+1;}
-#line 40 "excelsior_reader.rl"
+#line 41 "excelsior_reader.rl"
 	{act = 2;}
-	goto st3;
-st3:
+	goto st2;
+st2:
 	if ( ++p == pe )
-		goto _test_eof3;
-case 3:
-#line 210 "excelsior_reader.c"
+		goto _test_eof2;
+case 2:
+#line 209 "excelsior_reader.c"
 	switch( (*p) ) {
 		case 10: goto tr0;
 		case 13: goto tr0;
@@ -214,59 +213,71 @@ case 3:
 		case 44: goto tr0;
 	}
 	goto tr3;
+st3:
+	if ( ++p == pe )
+		goto _test_eof3;
+case 3:
+	if ( (*p) == 10 )
+		goto tr5;
+	goto tr9;
+tr7:
+#line 1 "NONE"
+	{te = p+1;}
+#line 45 "excelsior_reader.rl"
+	{act = 6;}
+	goto st4;
 st4:
 	if ( ++p == pe )
 		goto _test_eof4;
 case 4:
-	if ( (*p) == 10 )
-		goto tr5;
-	goto tr8;
-st1:
-	if ( ++p == pe )
-		goto _test_eof1;
-case 1:
+#line 234 "excelsior_reader.c"
 	if ( (*p) == 34 )
 		goto tr2;
-	goto st1;
+	goto st0;
+st0:
+	if ( ++p == pe )
+		goto _test_eof0;
+case 0:
+	if ( (*p) == 34 )
+		goto tr2;
+	goto st0;
 tr2:
 #line 1 "NONE"
 	{te = p+1;}
-#line 42 "excelsior_reader.rl"
+#line 43 "excelsior_reader.rl"
 	{act = 4;}
 	goto st5;
 st5:
 	if ( ++p == pe )
 		goto _test_eof5;
 case 5:
-#line 242 "excelsior_reader.c"
+#line 255 "excelsior_reader.c"
 	if ( (*p) == 34 )
-		goto st1;
-	goto tr9;
-st0:
-cs = 0;
-	goto _out;
+		goto st0;
+	goto tr11;
 	}
+	_test_eof1: cs = 1; goto _test_eof; 
 	_test_eof2: cs = 2; goto _test_eof; 
 	_test_eof3: cs = 3; goto _test_eof; 
 	_test_eof4: cs = 4; goto _test_eof; 
-	_test_eof1: cs = 1; goto _test_eof; 
+	_test_eof0: cs = 0; goto _test_eof; 
 	_test_eof5: cs = 5; goto _test_eof; 
 
 	_test_eof: {}
 	if ( p == eof )
 	{
 	switch ( cs ) {
-	case 3: goto tr0;
-	case 4: goto tr8;
-	case 1: goto tr0;
-	case 5: goto tr9;
+	case 2: goto tr0;
+	case 3: goto tr9;
+	case 4: goto tr10;
+	case 0: goto tr0;
+	case 5: goto tr11;
 	}
 	}
 
-	_out: {}
 	}
 
-#line 111 "excelsior_reader.rl"
+#line 109 "excelsior_reader.rl"
 
     if(ts != 0) { // we are not at the end
       have = pe - ts; //so copy stuff back in
@@ -303,6 +314,7 @@ VALUE cReader;
 void Init_excelsior_reader() {
   s_read = rb_intern("read");
   mExcelsior = rb_define_module("Excelsior");
+  eExcelsiorMalformedCSVError = rb_define_class_under(mExcelsior, "MalformedCSVError", rb_eStandardError);
   cReader = rb_define_class_under(mExcelsior, "Reader", rb_cObject);
   rb_define_singleton_method(cReader, "rows", e_rows, -1);
 }

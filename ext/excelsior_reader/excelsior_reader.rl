@@ -2,6 +2,7 @@
 
 #define EXCELSIOR_BUFSIZE 16384
 
+static VALUE eExcelsiorMalformedCSVError;
 static ID s_read;
 static VALUE arr;
 static VALUE header_row;
@@ -41,11 +42,11 @@ static int has_found = 0;
     value { rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts, te - ts)); has_found = 1;};
     string { rb_ary_push((is_header_row ? header_row : arr), rb_str_new(ts + 1, te - ts - 2)); has_found = 1;};
     delimiter { if(has_found == 0) rb_ary_push((is_header_row ? header_row : arr), Qnil); has_found = 0;};
+    any { rb_raise(eExcelsiorMalformedCSVError, "invalid csv syntax"); };
   *|;
 }%%
 
 %% write data nofinal;
-
 
 VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 
@@ -70,7 +71,7 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
     header_row = rb_ary_new();
   }
   is_io = rb_respond_to(io, s_read);
-  buf = (char *) malloc(buffer_size); //ALLOC_N(char, buffer_size); <= This caused problems
+  buf = (char *) malloc(buffer_size);
 
   %% write init;
 
@@ -89,8 +90,6 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
       len = RSTRING_LEN(str);
       memcpy(p, StringValuePtr(str), len);
     } else {
-      // Going to assume it's a string and already in memory
-      //str = io;
       p = RSTRING_PTR(io);
       len = RSTRING_LEN(io);
       pe = p + len;
@@ -100,7 +99,6 @@ VALUE e_rows(int argc, VALUE *argv, VALUE self) {
 
     if(len < space) {
       done = 1;
-      //p[len++] = 0; can't seem to get it to work with this
       pe = p + len;
       eof = pe;
     } else {
@@ -144,6 +142,7 @@ VALUE cReader;
 void Init_excelsior_reader() {
   s_read = rb_intern("read");
   mExcelsior = rb_define_module("Excelsior");
+  eExcelsiorMalformedCSVError = rb_define_class_under(mExcelsior, "MalformedCSVError", rb_eStandardError);
   cReader = rb_define_class_under(mExcelsior, "Reader", rb_cObject);
   rb_define_singleton_method(cReader, "rows", e_rows, -1);
 }

@@ -1,3 +1,4 @@
+require 'csv'
 require 'spec_helper'
 FIXTURE_PATH = File.expand_path("../fixtures", __FILE__)
 
@@ -44,5 +45,10 @@ describe Excelsior::Reader do
     end
 
     expect(data).to eq([[], [], []])
+  end
+
+  it "raises on invalid quotes" do
+    csv = StringIO.new('"Foo","Bar","Baz')
+    expect { Excelsior::Reader.rows(csv) {|row| row} }.to raise_error(Excelsior::MalformedCSVError)
   end
 end
